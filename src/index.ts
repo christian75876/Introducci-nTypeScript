@@ -99,17 +99,17 @@
 
 //2. Objetos
 //Tarea: Define un objeto Car con propiedades marca, modelo y año. Crea una instancia de Car e imprime sus propiedades en consola.
-interface Car {
-    brand: string,
-    model: string,
-    year: number,
-};
+// interface Car {
+//     brand: string,
+//     model: string,
+//     year: number,
+// };
 
-const myCar: Car = {
-    brand: 'Tesla',
-    model: 'Model X',
-    year: 2022,
-};
+// const myCar: Car = {
+//     brand: 'Tesla',
+//     model: 'Model X',
+//     year: 2022,
+// };
 // console.log(myCar);
 
 
@@ -159,12 +159,108 @@ const myCar: Car = {
 //         return 'Todos los parámetros deben ser del mismo tipo';
 //     }
 //     // Si todos los parámetros son del mismo tipo, no retorna nada (undefined)
-//     return undefined;
+//     return 'Los parametros son iguales';
 // };
 // console.log(validateParams(4,4,true));
 
 //Tarea 3: Define una funcion que reciba una matriz cuadrada de numeros como parametros y devuelva la matriz gira 90 grados en sentido horario. (2 Riwi points)
 
-const rotateMatrix = (matrix: number[][]) => {
+// const rotateMatrix = (matrix: number[][]) => {
+//     const lengthMatrix = matrix.length;
+//     const result: number [][] = Array.from({length: lengthMatrix}, () => Array(lengthMatrix).fill(0));
+//     for (let i = 0; i < lengthMatrix; i++) {
+//         for (let j = 0; j < lengthMatrix; j++) {
+//             result[j][lengthMatrix - 1 - i] = matrix[i][j];
+//         }
+//     }
+//     return result
+// };
 
-};
+// const matrix = [
+//     [1, 2, 3],
+//     [4, 5, 6],
+//     [7, 8, 9]
+// ];
+
+// const rotatedMatrix = rotateMatrix(matrix);
+// console.log(rotatedMatrix);
+
+/**¿Qué beneficios ofrece la definición explícita de tipos en las funciones en TypeScript ?
+ * permite evitar ingreso de valores no validos en las funciones 
+*/
+
+//Clases, Interfaces, metodos, constructores, Pilares de la POO
+
+
+class DatabaseConnection {
+    beginTransaction(): void { // Inicia una transacción
+        console.log("Transaction started");
+    }
+
+    commitTransaction(): void { // Confirma una transacción
+        console.log("Transaction committed");
+    }
+
+    rollbackTransaction(): void { // Revierte una transacción
+        console.log("Transaction rolled back");
+    }
+}
+
+function Transactional(target: any, propertyName: string, descriptor: TypedPropertyDescriptor<any>) {
+    const originalMethod = descriptor.value!;
+
+    descriptor.value = function (...args: any[]) {
+        const dbConnection = new DatabaseConnection();
+
+        dbConnection.beginTransaction();
+
+        try {
+            const result = originalMethod.apply(this, args);
+            dbConnection.commitTransaction();
+            return result;
+        } catch (error) {
+            dbConnection.rollbackTransaction();
+            throw error;
+        }
+    };
+
+    return descriptor;
+}
+
+
+
+
+class UserService {
+    @Transactional
+    createUser(username: string, email: string): void {
+        console.log(`Creating user ${ username } with email ${ email }`);
+        // Simulamos una operación que podría fallar
+        if (!email.includes('@')) {
+            throw new Error("Invalid email");
+        }
+        console.log(`User ${ username } created successfully`);
+    }
+}
+
+// Probando la funcionalidad
+const userService = new UserService();
+
+try {
+    userService.createUser("john_doe", "john.doe@example.com");
+} catch (error) {
+    if (error instanceof Error) {
+        console.error("Transaction failed:", error.message);
+    } else {
+        console.error("Transaction failed:", error);
+    }
+}
+
+try {
+    userService.createUser("jane_doe", "jane.doe@example.com");
+} catch (error) {
+    if (error instanceof Error) {
+        console.error("Transaction failed:", error.message);
+    } else {
+        console.error("Transaction failed:", error);
+    }
+}

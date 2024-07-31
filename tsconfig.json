@@ -5,12 +5,14 @@
     "outDir": "./dist", // El directorio de salida para los archivos compilados
     "rootDir": "./src", // El directorio raíz para el código fuente TypeScript
     "strict": true, // Habilita todas las verificaciones estrictas
-    "esModuleInterop": true // Habilita interoperabilidad con módulos CommonJS
+    "esModuleInterop": true, // Habilita interoperabilidad con módulos CommonJS
+    "experimentalDecorators": true, // Habilita el uso de decoradores
+    "emitDecoratorMetadata": true // Emite metadatos de decoradores para TypeScript
   },
   "include": [
-    "src/*/.ts"
-  ], // Incluye todos los archivos .ts en el directorio src
+    "src/**/*.ts" // Incluye todos los archivos .ts en el directorio src
+  ],
   "exclude": [
     "node_modules"
-  ] // Excluye el directorio node_modules
+  ]
 }
